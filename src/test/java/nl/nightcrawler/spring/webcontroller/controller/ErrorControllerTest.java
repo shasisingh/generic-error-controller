@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +25,7 @@ class ErrorControllerTest {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         when(httpServletRequest.getAttribute("jakarta.servlet.error.status_code")).thenReturn(403);
         when(httpServletRequest.getAttribute("jakarta.servlet.error.exception")).thenReturn(new RuntimeException("No such method"));
-        ResponseEntity<ErrorController.ErrorResponse> response = errorController.errorPost(httpServletRequest);
+        ResponseEntity<ErrorController.ErrorResponse> response = errorController.errorJson(httpServletRequest);
         assertEquals(403, response.getStatusCode().value());
         assertNotNull(response.getBody().getMessage());
         assertNotNull(response.getBody().getTimestamp());
@@ -39,7 +41,7 @@ class ErrorControllerTest {
         HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
         when(httpServletRequest.getAttribute("jakarta.servlet.error.status_code")).thenReturn(415);
         when(httpServletRequest.getAttribute("jakarta.servlet.error.exception")).thenReturn(new HttpMediaTypeNotSupportedException("media type is not supported"));
-        ResponseEntity<ErrorController.ErrorResponse> response = errorController.errorGet(httpServletRequest);
+        ResponseEntity<ErrorController.ErrorResponse> response = errorController.errorJson(httpServletRequest);
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getStatusCode());
         assertEquals(415, response.getBody().getStatus());
         assertEquals("media type is not supported", response.getBody().getMessage());
